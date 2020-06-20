@@ -18,6 +18,14 @@ struct AddBookView: View {
     @State private var genre = ""
     @State private var review = ""
     
+    private var saveDisabled: Bool{
+        if(genre == ""){
+            return true
+        }else{
+            return false
+        }
+    }
+    
     
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
@@ -36,11 +44,7 @@ struct AddBookView: View {
                 }
 
                 Section {
-                    Picker("Rating", selection: $rating) {
-                        ForEach(0..<6) {
-                            Text("\($0)")
-                        }
-                    }
+                    RatingView(rating: $rating)
 
                     TextField("Write a review", text: $review)
                 }
@@ -53,10 +57,11 @@ struct AddBookView: View {
                         newBook.rating = Int16(self.rating)
                         newBook.genre = self.genre
                         newBook.review = self.review
+                        newBook.date = Date()
 
                         try? self.moc.save()
                         self.presentationMode.wrappedValue.dismiss()
-                    }
+                    }.disabled(saveDisabled)
                 }
             }
             .navigationBarTitle("Add Book")
